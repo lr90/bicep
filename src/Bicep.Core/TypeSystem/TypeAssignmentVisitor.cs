@@ -589,8 +589,8 @@ namespace Bicep.Core.TypeSystem
 
                         return GetNamedPropertyType(objectType, syntax.PropertyName, syntax.PropertyName.IdentifierName, diagnostics);
 
-                    case DiscriminatedObjectType discriminatedObjectType:
-                        // TODO: Resolve discriminator
+                    case DiscriminatedObjectType _:
+                        // TODO: We might be able use the declared type here to resolve discriminator to improve the assigned type
                         return LanguageConstants.Any;
 
                     case TypeSymbol _ when TypeValidator.AreTypesAssignable(baseType, LanguageConstants.Object):
