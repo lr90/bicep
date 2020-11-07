@@ -559,6 +559,19 @@ namespace Bicep.Core.TypeSystem
                     return ErrorType.Create(DiagnosticBuilder.ForPosition(syntax.IndexExpression).ObjectsRequireStringIndex(indexType));
                 }
 
+                if (baseType is DiscriminatedObjectType)
+                {
+                    if (TypeValidator.AreTypesAssignable(indexType, LanguageConstants.String))
+                    {
+                        // index is assignable to string
+                        // since we're not resolving the discriminator currently, we can just return the "any" type
+                        // TODO: resolve the discriminator
+                        return LanguageConstants.Any;
+                    }
+
+                    return ErrorType.Create(DiagnosticBuilder.ForPosition(syntax.IndexExpression).ObjectsRequireStringIndex(indexType));
+                }
+
                 // index was of the wrong type
                 return ErrorType.Create(DiagnosticBuilder.ForPosition(syntax.BaseExpression).IndexerRequiresObjectOrArray(baseType));
             });
