@@ -573,17 +573,7 @@ namespace Bicep.Core.TypeSystem
                     return ErrorType.Create(errors);
                 }
 
-                if (baseType is ResourceType resourceType)
-                {
-                    // We're accessing a property on the resource body.
-                    baseType = resourceType.Body.Type;
-                }
-
-                if (baseType is ModuleType moduleType)
-                {
-                    // We're accessing a property on the module body.
-                    baseType = moduleType.Body.Type;
-                }
+                baseType = UnwrapType(baseType);
 
                 if (!(baseType is ObjectType objectType))
                 {
@@ -644,17 +634,7 @@ namespace Bicep.Core.TypeSystem
                     return ErrorType.Create(errors);
                 }
 
-                if (baseType is ResourceType resourceType)
-                {
-                    // We're accessing a property on the resource body.
-                    baseType = resourceType.Body.Type;
-                }
-
-                if (baseType is ModuleType moduleType)
-                {
-                    // We're accessing a property on the module body.
-                    baseType = moduleType.Body.Type;
-                }
+                baseType = UnwrapType(baseType);
 
                 if (!(baseType is ObjectType objectType))
                 {
@@ -981,5 +961,19 @@ namespace Bicep.Core.TypeSystem
                 },
                 accumulated => accumulated);
         }
+        
+        private static TypeSymbol UnwrapType(TypeSymbol baseType) =>
+            baseType switch
+            {
+                ResourceType resourceType =>
+                    // We're accessing a property on the resource body.
+                    resourceType.Body.Type,
+
+                ModuleType moduleType =>
+                    // We're accessing a property on the module body.
+                    moduleType.Body.Type,
+
+                _ => baseType
+            };
     }
 }
