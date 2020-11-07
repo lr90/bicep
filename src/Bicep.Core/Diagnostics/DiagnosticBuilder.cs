@@ -645,6 +645,12 @@ namespace Bicep.Core.Diagnostics
                 TextSpan,
                 "BCP112",
                 $"The \"{LanguageConstants.TargetScopeKeyword}\" cannot be declared multiple times in one file.");
+
+            public ErrorDiagnostic EmptyIndexerNotAllowed() => new ErrorDiagnostic(
+                TextSpan,
+                "BCP113",
+                "An empty indexer is not allowed. Specify a valid expression."
+            );
         }
 
         public static DiagnosticBuilderInternal ForPosition(TextSpan span)
