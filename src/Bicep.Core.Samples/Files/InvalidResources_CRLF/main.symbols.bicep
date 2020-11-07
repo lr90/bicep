@@ -243,7 +243,7 @@ var discriminatorKeySetTwoCompletions2 = discriminatorKeySetTwo.properties.
 
 // #completionTest(90) -> powershellPropertyAccess
 var discriminatorKeySetTwoCompletionsArrayIndexer = discriminatorKeySetTwo['properties'].a
-//@[4:49) Variable discriminatorKeySetTwoCompletionsArrayIndexer. Type: error. Declaration start char: 0, length: 90
+//@[4:49) Variable discriminatorKeySetTwoCompletionsArrayIndexer. Type: any. Declaration start char: 0, length: 90
 // #completionTest(90) -> powershellPropertyAccess
 var discriminatorKeySetTwoCompletionsArrayIndexer2 = discriminatorKeySetTwo['properties'].
 //@[4:50) Variable discriminatorKeySetTwoCompletionsArrayIndexer2. Type: error. Declaration start char: 0, length: 90
@@ -342,7 +342,7 @@ var nestedDiscriminatorCompletions = nestedDiscriminator.properties.a
 //@[4:34) Variable nestedDiscriminatorCompletions. Type: any. Declaration start char: 0, length: 69
 // #completionTest(73) -> defaultCreateModeProperties
 var nestedDiscriminatorCompletions2 = nestedDiscriminator['properties'].a
-//@[4:35) Variable nestedDiscriminatorCompletions2. Type: error. Declaration start char: 0, length: 73
+//@[4:35) Variable nestedDiscriminatorCompletions2. Type: any. Declaration start char: 0, length: 73
 // #completionTest(69) -> defaultCreateModeProperties
 var nestedDiscriminatorCompletions3 = nestedDiscriminator.properties.
 //@[4:35) Variable nestedDiscriminatorCompletions3. Type: error. Declaration start char: 0, length: 69

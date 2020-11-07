@@ -498,6 +498,8 @@ namespace Bicep.Core.TypeSystem
                     return ErrorType.Create(errors);
                 }
 
+                baseType = UnwrapType(baseType);
+
                 if (baseType.TypeKind == TypeKind.Any)
                 {
                     // base expression is of type any
@@ -507,8 +509,8 @@ namespace Bicep.Core.TypeSystem
                         return LanguageConstants.Any;
                     }
 
-                    if (TypeValidator.AreTypesAssignable(indexType, LanguageConstants.Int) == true ||
-                        TypeValidator.AreTypesAssignable(indexType, LanguageConstants.String) == true)
+                    if (TypeValidator.AreTypesAssignable(indexType, LanguageConstants.Int) ||
+                        TypeValidator.AreTypesAssignable(indexType, LanguageConstants.String))
                     {
                         // index expression is string | int but base is any
                         return LanguageConstants.Any;
@@ -521,7 +523,7 @@ namespace Bicep.Core.TypeSystem
                 if (baseType is ArrayType baseArray)
                 {
                     // we are indexing over an array
-                    if (TypeValidator.AreTypesAssignable(indexType, LanguageConstants.Int) == true)
+                    if (TypeValidator.AreTypesAssignable(indexType, LanguageConstants.Int))
                     {
                         // the index is of "any" type or integer type
                         // return the item type
@@ -540,11 +542,11 @@ namespace Bicep.Core.TypeSystem
                         return GetExpressionedPropertyType(baseObject, syntax.IndexExpression);
                     }
 
-                    if (TypeValidator.AreTypesAssignable(indexType, LanguageConstants.String) == true)
+                    if (TypeValidator.AreTypesAssignable(indexType, LanguageConstants.String))
                     {
                         switch (syntax.IndexExpression)
                         {
-                            case StringSyntax @string when @string.TryGetLiteralValue() is string literalValue:
+                            case StringSyntax @string when @string.TryGetLiteralValue() is { } literalValue:
                                 // indexing using a string literal so we know the name of the property
                                 return GetNamedPropertyType(baseObject, syntax.IndexExpression, literalValue, diagnostics);
 
@@ -575,27 +577,31 @@ namespace Bicep.Core.TypeSystem
 
                 baseType = UnwrapType(baseType);
 
-                if (!(baseType is ObjectType objectType))
+                switch (baseType)
                 {
-                    if (TypeValidator.AreTypesAssignable(baseType, LanguageConstants.Object) != true)
-                    {
+                    case ObjectType objectType:
+                        if (!syntax.PropertyName.IsValid)
+                        {
+                            // the property is not valid
+                            // there's already a parse error for it, so we don't need to add a type error as well
+                            return ErrorType.Empty();
+                        }
+
+                        return GetNamedPropertyType(objectType, syntax.PropertyName, syntax.PropertyName.IdentifierName, diagnostics);
+
+                    case DiscriminatedObjectType discriminatedObjectType:
+                        // TODO: Resolve discriminator
+                        return LanguageConstants.Any;
+
+                    case TypeSymbol _ when TypeValidator.AreTypesAssignable(baseType, LanguageConstants.Object):
+                        // We can assign to an object, but we don't have a type for that object.
+                        // The best we can do is allow it and return the 'any' type.
+                        return LanguageConstants.Any;
+
+                    default:
                         // can only access properties of objects
                         return ErrorType.Create(DiagnosticBuilder.ForPosition(syntax.PropertyName).ObjectRequiredForPropertyAccess(baseType));
-                    }
-
-                    // We can assign to an object, but we don't have a type for that object.
-                    // The best we can do is allow it and return the 'any' type.
-                    return LanguageConstants.Any;
                 }
-
-                if (!syntax.PropertyName.IsValid)
-                {
-                    // the property is not valid
-                    // there's already a parse error for it, so we don't need to add a type error as well
-                    return ErrorType.Empty();
-                }
-
-                return GetNamedPropertyType(objectType, syntax.PropertyName, syntax.PropertyName.IdentifierName, diagnostics);
             });
 
         public override void VisitFunctionCallSyntax(FunctionCallSyntax syntax)
