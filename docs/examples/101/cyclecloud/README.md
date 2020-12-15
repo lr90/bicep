@@ -11,7 +11,7 @@ Deployment steps
 ```bash
 bicep build *.bicep
 az deployment sub create --template-file sub.json --location uksouth --confirm-with-what-if 
-az deployment group create --resource-group rg-bicep --template-file main.json --confirm-with-what-if 
+az deployment group create --resource-group bicep-rg --template-file main.json --confirm-with-what-if 
 ```
 
 With Bicep 0.2 the VSCode Bicep extension brings inbuilt intellisence which greatly simplifies adding resources and setting the required properties. Bicep will also determining the dependencies and perform error/consistency checking so a template such as this can be rapidly rapidly created.
